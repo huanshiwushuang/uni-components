@@ -6,7 +6,17 @@
 				"navigationBarTitleText": "uni-app"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/gh/ghNav",
+            "style" : {
+				"navigationBarTitleText":"导航"
+			}
+        }
+        ,{
+            "path" : "pages/gh/ghNoStatusbar",
+            "style" : {}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

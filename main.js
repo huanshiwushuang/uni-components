@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App'
-import '@/common/gh.less'
 
 Vue.config.productionTip = false
 
