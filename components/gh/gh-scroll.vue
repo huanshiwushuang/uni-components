@@ -1,3 +1,4 @@
+<!-- 算法参考：cnblogs.com/ranyonsue/p/8119155.html -->
 <template>
 	<view class="gh-scroll">
 		<scroll-view
