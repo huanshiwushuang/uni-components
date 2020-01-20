@@ -3,7 +3,8 @@
 	<view class="gh-scroll">
 		<scroll-view
 			class="gh-h"
-			:scroll-y="true"
+			v-on="listeners"
+			v-bind="$attrs"
 		>
 			<slot></slot>
 		</scroll-view>
@@ -16,6 +17,20 @@
 			return {
 				
 			};
+		},
+		computed: {
+			listeners () {
+				return Object.assign({}, this.$listeners, {
+					scroll: this.scroll
+				})
+			}
+		},
+		methods: {
+			scroll (e) {
+				// 触发父控件滚动方法
+				console.log(e)
+				this.$emit('scroll')
+			}
 		}
 	}
 </script>

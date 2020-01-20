@@ -6,7 +6,7 @@
 					<view slot="centerTitle">导航</view>
 					<view slot="rightTitle">展示</view>
 				</gh-nav>
-				<gh-scroll style="background-color: #f00;height: 0;flex-grow: 1;">
+				<gh-scroll :scroll-y="true" style="background-color: #f00;height: 0;flex-grow: 1;">
 					<view v-for="i in 40" :key="i">
 						asdsadsadsad<br>
 					</view>
