@@ -14,5 +14,5 @@
 
 <style>
 	/*每个页面公共css */
-	@import './common/gh.css'
+	@import './common/gh.less'
 </style>
