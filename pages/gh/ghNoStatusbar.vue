@@ -1,6 +1,8 @@
 <template>
 	<view>
-		<gh-no-statusbar></gh-no-statusbar>
+		<gh-no-statusbar>
+			123
+		</gh-no-statusbar>
 	</view>
 </template>
 

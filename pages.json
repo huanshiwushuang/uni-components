@@ -14,7 +14,22 @@
         }
         ,{
             "path" : "pages/gh/ghNoStatusbar",
-            "style" : {}
+            "style" : {
+				"navigationBarTitleText":"ghNoStatusbar"
+			}
+        }
+        ,{
+            "path" : "pages/gh/ghFullPage",
+            "style" : {
+				// "navigationBarTitleText":"ghFullPage"
+				"navigationStyle":"custom"
+			}
+        }
+        ,{
+            "path" : "pages/gh/ghPage",
+            "style" : {
+				"navigationStyle":"custom"
+			}
         }
     ],
 	"globalStyle": {

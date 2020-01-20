@@ -2,6 +2,8 @@
 	<view class="content">
 		<view @click="toPage('../gh/ghNav')">ghNav</view>
 		<view @click="toPage('../gh/ghNoStatusbar')">ghNoStatusbar</view>
+		<view @click="toPage('../gh/ghFullPage')">ghFullPage</view>
+		<view @click="toPage('../gh/ghPage')">ghPage</view>
 	</view>
 </template>
 

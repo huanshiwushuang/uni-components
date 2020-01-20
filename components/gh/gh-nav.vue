@@ -1,5 +1,4 @@
-<!-- 【兼容性问题】 -->
-<!-- 在APP里。中间插槽如需可以点击，【可能】需要在调用处给予样式 pointer-events: auto -->
+<!-- 自定义导航 -->
 <template>
 	<view class="gh-nav gh-df gh-aic gh-pr gh-jcsb">
 		<view class="left gh-df gh-aic">
@@ -56,7 +55,7 @@
 	.gh-nav {
 		.left {
 			.back-btn {
-				font-size: 60rpx;
+				font-size: 54rpx;
 				margin-left: -19rpx;
 				color: #000;
 			}
@@ -68,7 +67,7 @@
 			.center-content {
 				pointer-events: auto;
 				.centerTitle {
-					font-size:37rpx;
+					font-size:36rpx;
 					/* #ifndef APP-PLUS */
 					font-weight: bold;
 					/* #endif */
