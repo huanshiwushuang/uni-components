@@ -6,11 +6,16 @@
 					<view slot="centerTitle">导航</view>
 					<view slot="rightTitle">展示</view>
 				</gh-nav>
-				<gh-scroll :scroll-y="true" style="background-color: #f00;height: 0;flex-grow: 1;">
-					<view v-for="i in 40" :key="i">
-						asdsadsadsad<br>
+				<gh-scroll :scroll-y="true" style="height: 0;flex-grow: 1;">
+					<view slot="top" class="gh-df gh-jcc gh-aic gh-aife gh-h">
+						<image src="../../static/img/loading.gif" class="loading"></image>
 					</view>
-					123
+					<view>
+						<view v-for="i in 340" :key="i">
+							{{ i }}asdsadsadsad<br>
+						</view>
+						123
+					</view>
 				</gh-scroll>
 			</gh-no-statusbar>
 		</gh-full-page>
@@ -46,8 +51,11 @@
 
 <style lang="less">
 	.content {
-		background-color: #f00;
 		height: 0;
 		flex-grow: 1;
+	}
+	.loading {
+		width: 48rpx;
+		height: 48rpx;
 	}
 </style>
