@@ -16,6 +16,9 @@
 						</view>
 						123
 					</view>
+					<view slot="bottom">
+						bottom
+					</view>
 				</gh-scroll>
 			</gh-no-statusbar>
 		</gh-full-page>

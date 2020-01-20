@@ -1,26 +1,30 @@
 <!-- 算法参考：cnblogs.com/ranyonsue/p/8119155.html -->
 <template>
 	<view
-		class="gh-scroll gh-df gh-fdc"
+		class="gh-scroll gh-oh"
 		@touchstart="touchstart"
 		@touchmove="touchmove"
 		@touchend="touchend"
 	>
-		<!-- 下拉刷新 -->
-		<view class="top gh-oh" :style="topStyle">
-			<slot name="top"></slot>
-		</view>
-		<!-- 滚动 -->
-		<scroll-view
-			class="gh-scroll-view"
-			v-on="listeners"
-			v-bind="$attrs"
-		>
-			<slot></slot>
-		</scroll-view>
-		<!-- 上拉加载 -->
-		<view class="bottom gh-oh">
-			<slot name="bottom"></slot>
+		<view class="gh-scroll-content gh-df gh-fdc gh-h" :style="topStyle">
+			<!-- 下拉刷新 -->
+			<view class="top gh-pr">
+				<view class="top-content gh-pa gh-w">
+					<slot name="top"></slot>
+				</view>
+			</view>
+			<!-- 滚动 -->
+			<scroll-view
+				class="gh-scroll-view"
+				v-on="listeners"
+				v-bind="$attrs"
+			>
+				<slot></slot>
+			</scroll-view>
+			<!-- 上拉加载 -->
+			<view class="bottom gh-oh">
+				<slot name="bottom"></slot>
+			</view>
 		</view>
 	</view>
 </template>
@@ -33,11 +37,9 @@
 				move: [],
 				end: null,
 				
-				topInfo: null,
 				topStyle: {
 				},
 				
-				bottomInfo: null,
 			};
 		},
 		computed: {
@@ -50,10 +52,9 @@
 			}
 		},
 		mounted () {
-			uni.createSelectorQuery().in(this).select('.top').boundingClientRect((data) => {
+			uni.createSelectorQuery().in(this).select('.top-content').boundingClientRect((data) => {
 				// 设置高度
 				this.topStyle = Object.assign({}, this.topStyle, {
-					height: data.height+'px'
 				})
 			}).exec()
 		},
@@ -90,11 +91,20 @@
 <style lang="less">
 	.gh-scroll {
 		.top {
+			height: 100vh;
+			margin-top: -100vh;
+			.top-content {
+				bottom: 0;
+			}
 		}
 		.gh-scroll-view {
 			height: 0;
 			flex-grow: 1;
 			background-color: #f00;
+		}
+		.bottom {
+			height: 100vh;
+			margin-bottom: -100vh;
 		}
 	}
 </style>
