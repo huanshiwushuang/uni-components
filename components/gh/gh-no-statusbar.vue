@@ -17,6 +17,7 @@
 
 <style lang="less">
 	.gh-no-statusbar {
-		margin-top: var(--status-bar-height);
+		// border 配合 class gh-bb
+		border-top: var(--status-bar-height) solid transparent;
 	}
 </style>

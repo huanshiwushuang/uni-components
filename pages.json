@@ -37,5 +37,21 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+	    "color":"#555555",
+		"selectedColor":"#BF3127",
+		"borderStyle":"white",
+		"backgroundColor":"#F3F8F1",
+		"list": [
+			{
+				"pagePath":"pages/index/index",
+				"text":"首页"
+			},
+			{
+				"pagePath":"pages/gh/ghPage",
+				"text":"ghPage"
+			}
+		]
 	}
 }
