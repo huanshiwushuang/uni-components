@@ -6,7 +6,7 @@
 					<view slot="centerTitle">导航</view>
 					<view slot="rightTitle">展示</view>
 				</gh-nav>
-				<gh-scroll :scroll-y="true" style="height: 0;flex-grow: 1;">
+				<gh-scroll :scroll-y="true" style="height: 0;flex-grow: 1;" topBounceDuration="4s">
 					<view slot="top" class="gh-df gh-jcc gh-aic gh-aife gh-h">
 						<image src="../../static/img/loading.gif" class="loading"></image>
 					</view>
