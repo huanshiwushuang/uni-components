@@ -1,178 +1,104 @@
-<!-- 阅读：cnblogs.com/ranyonsue/p/8119155.html -->
-<!-- 数学的 H5 应用：拖动阻尼：https://www.jianshu.com/p/3e3aeab63555 -->
-<!-- CSS Variables：https://segmentfault.com/q/1010000015375955 -->
+<!-- 缓动函数:https://kodhus.com/easings/ -->
 <template>
-	<view class="gh-scroll gh-oh" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"
+	<view class="gh-scroll gh-h gh-oh" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"
 		:style="cssVar"
 	>
-		<view :class="['gh-scroll-content', 'gh-df', 'gh-fdc', 'gh-h', { bounce: isTriggerBounce }]" :style="contentStyle">
-			<!-- 下拉刷新 -->
-			<view class="top gh-pr">
-				<view class="top-content gh-pa gh-w">
-					<slot name="top"></slot>
-				</view>
-			</view>
-			<!-- 滚动 -->
-			<scroll-view
-				class="gh-scroll-view"
-				v-bind="$attrs"
-				@scrolltoupper="scrolltoupper"
-				@scrolltolower="scrolltolower"
-				@scroll="scroll"
-			>
-				<slot></slot>
-			</scroll-view>
-			<!-- 上拉加载 -->
-			<view class="bottom gh-oh">
-				<slot name="bottom"></slot>
-			</view>
+		<!-- 滚动部分 -->
+		<view class="gh-scroll-content" @transitionend="transitionend" :style="contentStyle">
+			<slot></slot>
 		</view>
 	</view>
 </template>
 
+<!-- 不考虑单双指,一律以最后一个touch为准 -->
 <script>
 	export default {
 		props: {
-			topBounceDuration: {
+			//[时间]-动画持续时间
+			scrollDuration: {
 				type: String,
-				// top 回弹效果默认持续时间
+				// 默认持续时间
 				default () {
 					return '500ms'
 				}
 			},
-			// 默认回弹高度，根据滑动瞬时速度 和 top部分 的高度计算
-			topBounceMaxHeight: String
+			// 滚动距离 与 手指移动距离的比, 如: 2 表示手指滑动 1px, 元素滚动 2px
+			moveWeight: {
+				type: Number,
+				default () {
+					return 1
+				}
+			}
 		},
 		data() {
 			return {
-				// 手指是否还在触摸
-				isTouching: false,
-				// touch start event
-				startData: null,
-				// scroll events
-				scrollData: [],
-				// touch end event
-				endData: null,
-				// 滚动瞬时速度，用于计算弹性效果
-				speed: 0,
-				// Css Variables，用于弹性效果的keyframes动画
-				cssVar: {
-					'--bounce-height': '100px',
-				},
-				// 是否触发弹性效果，用于控制class
-				isTriggerBounce: false,
+				start: null,
+				move: [],
+				end: null,
+				// 滚动的距离
+				scrollTop: 0,
+				// 滚动的时候, 累加的临时变量
+				tmpScrollTop: 0,
 			};
 		},
+		mounted () {
+			// setTimeout(() => {
+			// 	this.contentStyle = Object.assign({}, this.contentStyle, {
+			// 		transform: 'translate(0, 100px)'
+			// 	})
+			// }, 1000)
+		},
 		computed: {
+			cssVar () {
+				return {
+					'--scroll-duration': this.scrollDuration
+				}
+			},
 			contentStyle () {
 				return {
-					'animation-duration': this.topBounceDuration
+					transform: 'translate(0, ' + this.scrollTop + 'px)'
 				}
-			}
-		},
-		mounted() {
-			this.initDOM()
-		},
-		watch: {
-			speed (newVal, oldVal) {
-				var a = uni.createSelectorQuery().in(this).select('.gh-scroll')
-				// console.log(a.style)
-				// console.log(a.style.setProperty)
 			}
 		},
 		methods: {
-			initDOM () {
-				// uni.createSelectorQuery().in(this).select('.top-content').boundingClientRect((data) => {
-					// 设置高度
-					// this.contentStyle = Object.assign({}, this.contentStyle, {})
-				// }).exec()
-				
-				// this.$refs.root.style
-			},
-			// touch 事件，用于获取手势的瞬时速度
-			touchstart(e) {
-				this.startData = e
-				this.isTouching = true
-			},
-			touchmove(e) {},
-			touchend(e) {
-				this.endData = e
-				this.isTouching = false
-			},
-			// scroll 事件监听
-			scroll(e) {
+			touchstart (e) {
+				this.start = e
+				// 临时记录, 在 move 里计算
+				this.tmpScrollTop = this.scrollTop
 				console.log(e)
-				this.scrollData.push(e)
-				if (this.scrollData.length > 2) {
-					this.scrollData.shift()
-				}
-				this.$emit('scroll')
 			},
-			scrolltoupper() {
-				if (!this.isTouching) {
-					this.speed = this.getCalcSpeed()
+			touchmove (e) {
+				this.move.push(e)
+				// 数组只保留最后两次 move
+				if (this.move.length > 2) {
+					this.move.shift()
 				}
-				this.isTriggerBounce = true
-				this.$nextTick(() => {
-					this.isTriggerBounce = true
-				})
-				this.$emit('scrolltoupper')
+				let touch1 = this.start.touches.slice(-1)[0]
+				let touch2 = e.touches.slice(-1)[0]
+				// moveWeight
+				this.scrollTop = this.tmpScrollTop + (touch2.pageY - touch1.pageY)*this.moveWeight
+				
+				console.log(e)
 			},
-			scrolltolower() {
-				if (!this.isTouching) {
-					this.speed = this.getCalcSpeed()
-				}
-				this.$emit('scrolltolower')
+			touchend (e) {
+				this.end = e
+				console.log(e)
 			},
-			// 获取滚动的瞬时速度
-			getCalcSpeed () {
-				if (this.scrollData.length >= 2) {
-					let one = this.scrollData[0]
-					let two = this.scrollData[1]
-					// 根据最后两次滚动计算
-					let speed = Math.abs(one.detail.scrollTop - two.detail.scrollTop) / Math.abs(one.timeStamp - two.timeStamp)
-					return speed
-				}
-			}
+			transitionend () {
+				// uni.showToast({
+				// 	title: '123'
+				// })
+			},
 		}
 	}
 </script>
 
 <style lang="less">
 	.gh-scroll {
-		.top {
-			height: 100vh;
-			margin-top: -100vh;
-
-			.top-content {
-				bottom: 0;
-			}
-		}
-
-		.gh-scroll-view {
-			height: 0;
-			flex-grow: 1;
-			background-color: #f00;
-		}
-
-		.bottom {
-			height: 100vh;
-			margin-bottom: -100vh;
-		}
-		
-		// 弹性动画 class
-		.bounce {
-			animation: bounce 500ms ease-out alternate;
-		}
-		@keyframes bounce {
-			0% {
-				transform: translate(0, 0);
-			}
-			50% {
-				transform: translate(0, var(--bounce-height));
-			}
-			100% {
-				transform: translate(0, 0);
+		.gh-scroll-content {
+			// 惯性
+			&.inertia {
+				transition: transform var(--scroll-duration) cubic-bezier(0.250, 0.460, 0.450, 0.940);
 			}
 		}
 	}

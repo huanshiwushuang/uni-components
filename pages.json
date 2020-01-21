@@ -31,6 +31,10 @@
 				"navigationStyle":"custom"
 			}
         }
+        ,{
+            "path" : "pages/gh/ghScroll",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -51,6 +55,10 @@
 			{
 				"pagePath":"pages/gh/ghPage",
 				"text":"ghPage"
+			},
+			{
+				"pagePath":"pages/gh/ghScroll",
+				"text":"ghScroll"
 			}
 		]
 	}
