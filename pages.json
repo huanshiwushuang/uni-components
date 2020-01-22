@@ -35,6 +35,10 @@
             "path" : "pages/gh/ghScroll",
             "style" : {}
         }
+        ,{
+            "path" : "pages/gh/test",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -59,6 +63,10 @@
 			{
 				"pagePath":"pages/gh/ghScroll",
 				"text":"ghScroll"
+			},
+			{
+				"pagePath":"pages/gh/test",
+				"text":"test"
 			}
 		]
 	}

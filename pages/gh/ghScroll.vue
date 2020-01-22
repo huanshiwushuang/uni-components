@@ -7,7 +7,7 @@
 					<view slot="rightTitle">展示</view>
 				</gh-nav>
 				<!-- 滚动 -->
-				<gh-scroll class="scroll" :moveWeight="1">
+				<gh-scroll class="scroll" :moveRate="1">
 					<view>
 						aaa
 						<view
