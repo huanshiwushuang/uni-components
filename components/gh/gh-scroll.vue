@@ -1,6 +1,12 @@
 <!-- 缓动函数:https://kodhus.com/easings/ -->
 <!-- 缓动函数使用方法：https://www.jqhtml.com/33760.html -->
 <!-- 补间引擎：https://github.com/tweenjs/tween.js -->
+<!-- 分为：是否需要精确监听滚动距离， -->
+<!-- 	不需要：则使用 transition 模拟，无法获取滚动过程中的距离 -->
+<!-- 	需要：使用补间引擎执行动画 -->
+<!-- 		是否有requestAnimationFrame函数 -->
+<!-- 			有：使用 requestAnimationFrame 执行屏幕刷新，更新动画 -->
+<!-- 			没有：使用setTimeout 模拟执行动画更新 -->
 <template>
 	<view class="gh-scroll gh-h gh-oh" @touchstart="touchstart" @touchmove.stop="touchmove" @touchend="touchend" :style="cssVar">
 		<!-- 滚动部分 -->
@@ -49,6 +55,37 @@
 		},
 		mounted () {
 			this.initDOM()
+			var that = this
+			
+			function animate(time) {
+			    that.$gh.requestAnimationFrame(animate);
+				// setTimeout(() => {
+				// 	time += 1000/60
+				// 	animate(time)
+				// }, 1000/60)
+			    that.$TWEEN.update(time);
+				
+			}
+			var id = that.$gh.requestAnimationFrame(animate);
+			// setTimeout(() => {
+			// 	animate(time)
+			// }, 2000)
+			
+			const coords = { x: 0, y: 0 }; 
+			const tween = new that.$TWEEN.Tween(coords) 
+			        .to({ x: 300, y: 200 }, 1000) 
+			        .easing(that.$TWEEN.Easing.Quadratic.Out) 
+			        .onUpdate(() => { 
+			            // box.style.setProperty('transform', `translate(, ${coords.y}px)`);
+						that.translateX = coords.x
+						that.translateY = coords.y
+						console.log(coords.y)
+						// 这里
+						setTimeout(() => {
+							that.cancelAnimationFrame(id)
+						}, 2000)
+			        })
+			        .start(); 
 		},
 		computed: {
 			cssVar () {
@@ -127,7 +164,7 @@
 	.gh-scroll {
 		.gh-scroll-content {
 			// 惯性-inertia
-			transition: transform var(--scroll-duration) cubic-bezier(0.250, 0.460, 0.450, 0.940);
+			// transition: transform var(--scroll-duration) cubic-bezier(0.250, 0.460, 0.450, 0.940);
 			// @keyframes inertia {
 			// 	0% {
 			// 		transform: translate(0);
