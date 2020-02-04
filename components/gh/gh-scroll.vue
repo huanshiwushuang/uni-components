@@ -55,15 +55,19 @@
 		},
 		mounted () {
 			this.initDOM()
+			// console.log(performance.now())
+			// return
 			var that = this
 			
 			function animate(time) {
-			    that.$gh.requestAnimationFrame(animate);
+				// console.log(time)
+			    id = that.$gh.requestAnimationFrame(animate);
 				// setTimeout(() => {
 				// 	time += 1000/60
 				// 	animate(time)
 				// }, 1000/60)
-			    that.$TWEEN.update(time);
+				// debugger
+			    that.$TWEEN.update();
 				
 			}
 			var id = that.$gh.requestAnimationFrame(animate);
@@ -79,10 +83,11 @@
 			            // box.style.setProperty('transform', `translate(, ${coords.y}px)`);
 						that.translateX = coords.x
 						that.translateY = coords.y
+						
 						console.log(coords.y)
 						// 这里
 						setTimeout(() => {
-							that.cancelAnimationFrame(id)
+							that.$gh.cancelAnimationFrame(id)
 						}, 2000)
 			        })
 			        .start(); 

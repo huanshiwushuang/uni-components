@@ -1,28 +1,18 @@
 export default {
-	requestAnimationFrame(...params) {
-		// https://segmentfault.com/a/1190000013424101?utm_source=index-hottest
-		var lastTime = 0;
+	// https://segmentfault.com/a/1190000013424101?utm_source=index-hottest
+	requestAnimationFrame(cb) {
 		let func = null
 		try {
+			throw new Error('123')
 			func = requestAnimationFrame
 		} catch (e) {
-			console.log(e)
-			func = function(callback, element) {
-				var currTime = new Date().getTime();
-				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-				var id = setTimeout(function() {
-					callback(currTime + timeToCall);
-				}, timeToCall)
-				lastTime = currTime + timeToCall;
-				return id;
+			func = function(callback) {
+				return setTimeout(callback, 1000/60, Date.now())
 			}
 		}
-		console.log('func')
-		console.log(func)
-		
-		return func(...params)
+		return func(cb)
 	},
 	cancelAnimationFrame(id) {
-		clearTimeout(id);
+		clearTimeout(id)
 	}
 }

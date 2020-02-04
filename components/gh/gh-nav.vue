@@ -1,6 +1,6 @@
 <!-- 自定义导航 -->
 <template>
-	<view class="gh-nav gh-df gh-aic gh-pr gh-jcsb">
+	<view class="gh-nav gh-df gh-aic gh-pr gh-jcsb gh-h">
 		<view class="left gh-df gh-aic">
 			<!-- 左侧插槽 -->
 			<slot name="left">
