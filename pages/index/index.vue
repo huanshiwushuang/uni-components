@@ -5,10 +5,10 @@
 		<view @click="toPage('../gh/ghNoStatusbar')">ghNoStatusbar</view>
 		<view @click="toPage('../gh/ghFullPage')">ghFullPage</view>
 		<view @click="toPage('../gh/ghScroll')">ghScroll</view>
-		<view style="height: 0;flex-grow: 1;background-color: #00f;overflow: auto;" @scroll.native="scroll">
+		<view style="height: 0;flex-grow: 1;background-color: #00f;overflow: auto;" @scroll="scroll">
 			<view>
 				555
-				<view v-for="i in 300" :key="i">123</view>
+				<view v-for="i in 50" :key="i">123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123</view>
 				666
 			</view>
 		</view>
@@ -32,7 +32,7 @@
 				})
 			},
 			scroll (e) {
-				console.log(e.srcElement)
+				console.log(e)
 			}
 		}
 	}

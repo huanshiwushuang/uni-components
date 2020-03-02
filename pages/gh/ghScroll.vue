@@ -1,25 +1,23 @@
 <template>
-	<view class="ghScroll gh-oh gh-bb">
-		<gh-full-page>
-			<gh-no-statusbar class="gh-df gh-fdc">
-				<gh-nav>
-					<view slot="centerTitle">导航</view>
-					<view slot="rightTitle">展示</view>
-				</gh-nav>
-				<!-- 滚动 -->
-				<gh-scroll class="scroll" :moveRate="1">
-					<view>
-						aaa
-						<view
-							v-for="i in 300"
-							:key="i"
-						>{{i}}123</view>
-						bbb
-					</view>
-				</gh-scroll>
-			</gh-no-statusbar>
-		</gh-full-page>
-	</view>
+	<gh-full-page class="ghScroll gh-oh gh-bb">
+		<gh-no-statusbar class="gh-df gh-fdc">
+			<gh-nav>
+				<view slot="centerTitle">导航</view>
+				<view slot="rightTitle">展示</view>
+			</gh-nav>
+			<!-- 滚动 -->
+			<gh-scroll class="scroll" :moveRate="1">
+				<view>
+					aaa
+					<view
+						v-for="i in 300"
+						:key="i"
+					>{{i}}123</view>
+					bbb
+				</view>
+			</gh-scroll>
+		</gh-no-statusbar>
+	</gh-full-page>
 </template>
 
 <script>

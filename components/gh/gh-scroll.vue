@@ -1,12 +1,13 @@
-<!-- 缓动函数:https://kodhus.com/easings/ -->
+<!-- 缓动函数速查表: https://kodhus.com/easings/ -->
 <!-- 缓动函数使用方法：https://www.jqhtml.com/33760.html -->
 <!-- 补间引擎：https://github.com/tweenjs/tween.js -->
-<!-- 分为：是否需要精确监听滚动距离， -->
-<!-- 	不需要：则使用 transition 模拟，无法获取滚动过程中的距离 -->
-<!-- 	需要：使用补间引擎执行动画 -->
-<!-- 		是否有requestAnimationFrame函数 -->
-<!-- 			有：使用 requestAnimationFrame 执行屏幕刷新，更新动画 -->
-<!-- 			没有：使用setTimeout 模拟执行动画更新 -->
+
+<!-- 1、使用 js 动态计算，配合补间引擎 tween.js，可以精确控制滚动位置，获取滚动的位置 -->
+	<!-- 但是：微信小程序和 APP 不支持 requestAnimationFrame，使用 setInterval 性能又特别低 -->
+<!-- 2、考虑使用 transition、animation 提高动画性能 -->
+	<!-- 但是：无法精确地瞬间停止，也无法获取准确的滚动位置，包括使用 animation-play-state -->
+	<!-- 目前：考虑动态改变，贝塞尔函数 cubic-bezier，来达到瞬间停止的目的 -->
+
 <template>
 	<view class="gh-scroll gh-h gh-oh" @touchstart="touchstart" @touchmove.stop="touchmove" @touchend="touchend" :style="cssVar">
 		<!-- 滚动部分 -->
@@ -39,6 +40,7 @@
 		},
 		data() {
 			return {
+				// 手指移动触摸点
 				start: null,
 				move: [],
 				end: null,
@@ -47,55 +49,18 @@
 				// 位移的 Y 轴距离
 				translateY: 0,
 				// 滚动的时候, 累加的临时变量
+				tmpTranslateX: 0,
 				tmpTranslateY: 0,
+				// 可滚动区域 Rect
 				contentRect: {
 					target: null
 				},
 			};
 		},
-		mounted () {
-			this.initDOM()
-			// console.log(performance.now())
-			// return
-			var that = this
-			
-			function animate(time) {
-				// console.log(time)
-			    id = that.$gh.requestAnimationFrame(animate);
-				// setTimeout(() => {
-				// 	time += 1000/60
-				// 	animate(time)
-				// }, 1000/60)
-				// debugger
-			    that.$TWEEN.update();
-				
-			}
-			var id = that.$gh.requestAnimationFrame(animate);
-			// setTimeout(() => {
-			// 	animate(time)
-			// }, 2000)
-			
-			const coords = { x: 0, y: 0 }; 
-			const tween = new that.$TWEEN.Tween(coords) 
-			        .to({ x: 300, y: 200 }, 1000) 
-			        .easing(that.$TWEEN.Easing.Quadratic.Out) 
-			        .onUpdate(() => { 
-			            // box.style.setProperty('transform', `translate(, ${coords.y}px)`);
-						that.translateX = coords.x
-						that.translateY = coords.y
-						
-						console.log(coords.y)
-						// 这里
-						setTimeout(() => {
-							that.$gh.cancelAnimationFrame(id)
-						}, 2000)
-			        })
-			        .start(); 
-		},
 		computed: {
 			cssVar () {
 				return {
-					'--scroll-duration': this.scrollDuration
+					'--scroll-duration': this.scrollDuration,
 				}
 			},
 			contentStyle () {
@@ -105,63 +70,96 @@
 			}
 		},
 		methods: {
+			// ****************************************************************************
+			// 初始化操作
+			// ****************************************************************************
 			initDOM () {
 				// 可滚动区域 rect 获取
 				this.contentRect.target = uni.createSelectorQuery().in(this).select('.gh-scroll-content')
 				this.updateContentRect()
 			},
-			// 更新可滚动区域宽高info
+			// 更新-可滚动区域宽高 info
 			updateContentRect () {
 				this.contentRect.target.boundingClientRect(data => {
 					this.contentRect = Object.assign({}, this.contentRect, data)
 				}).exec()
 			},
-			animationFrame (num) {
-				// console.log(num)
-				// uni.showToast({
-				// 	title: this.translateY+''
-				// })
+			// ****************************************************************************
+			// 用户操作
+			// ****************************************************************************
+			// 重置触摸
+			resetTouch () {
+				this.start = null
+				this.move = []
+				this.end = null
 			},
-			// [惯性]-缓动函数
-			easeOutQuad (t, b, c, d) {
-				return -c *(t/=d)*(t-2) + b;
-			},
-			// touch 函数
+			// 触摸开始
 			touchstart (e) {
+				this.resetTouch()
 				this.start = e
 				// 临时记录, 在 move 里计算
-				this.tmpTranslateY = this.translateY
-				console.log(e)
+				// this.tmpTranslateX = this.translateX
+				// this.tmpTranslateY = this.translateY
+				// 触摸 start 算入 move 中，方便下面 touchmove 用 move 计算跟随手指移动的位置
+				this.move.push(e)
 			},
+			// 触摸移动
 			touchmove (e) {
 				this.move.push(e)
 				// 数组只保留最后两次 move
 				if (this.move.length > 2) {
 					this.move.shift()
 				}
-				let touch1 = this.start.touches.slice(-1)[0]
-				let touch2 = e.touches.slice(-1)[0]
-				// moveRate
-				this.translateY = this.tmpTranslateY + (touch2.pageY - touch1.pageY)*this.moveRate
+				// 当有多根手指触摸滑动，只取最后按下的一根
+				let move1 = this.move[0].touches.slice(-1)[0]
+				let move2 = this.move[1].touches.slice(-1)[0]
+				// 计算斜率，判断移动方向：水平 | 垂直 | 倾斜
+				let tmpY = Math.abs(move2.clientY - move1.clientY)
+				tmpY = move2.clientY > move1.clientY ? -tmpY : tmpY
+				let xl = tmpY/(move2.clientX - move1.clientX)
+				// 思考：只看第1、2象限，当移动轨迹的斜率(tan)满足在 30°~60° || 120°~150° 时，视为斜着移动(无惯性)
+				// 		当移动的轨迹在
+				console.log(xl)
+				if (([Infinity, -Infinity].includes(xl)) || (xl >= this.calcK(-89.999999999) && xl <= this.calcK(-60)) || (xl >= this.calcK(60) && xl <= this.calcK(89.999999999))) {
+					console.log('垂直')
+				} else if ((xl === 0) || (xl >= this.calcK(-30) && xl <= this.calcK(30))) {
+					console.log('水平')
+				} else if (xl > this.calcK(-60) && xl < this.calcK(-30)) {
+					console.log('左上右下')
+				} else {
+					console.log('左下右上')
+				}
+				// console.log(move1)
+				// console.log(move2)
+				// moveRate: 移动的灵敏度
+				// 控制滚动位置不能超越 content 的 宽高
+				// this.translateX = this.tmpTranslateX + (move1.clientX - touchStart.clientX)*this.moveRate
+				// this.translateY = this.tmpTranslateY + (move1.clientY - touchStart.clientY)*this.moveRate
+				// 特别注意：需要不停的计算最后一个移动点 和 开始触摸点的斜率，以便在横向和纵向滚动都可以滚动时，斜着滑动可以按照一定的规则，不立即横向和纵向立即同步滚动。
 				
 				
-				// console.log(this.translateY)
-				// #ifdef APP-PLUS
-				// #endif
-				// #ifndef APP-PLUS
-				// window.requestAnimationFrame(this.animationFrame)
-				// #endif
 			},
+			// 计算并返回角度对应的斜率
+			calcK (t) {
+				return Math.tan(t*Math.PI/180)
+			},
+			// 触摸结束
 			touchend (e) {
 				this.end = e
-				// console.log(e)
 			},
 			transitionend () {
-				// uni.showToast({
-				// 	title: '123'
-				// })
 			},
-		}
+			// ****************************************************************************
+			// 自定义函数
+			// ****************************************************************************
+			// 惯性-缓动函数
+			easeOutQuad (t, b, c, d) {
+				return -c *(t/=d)*(t-2) + b;
+			}
+		},
+		mounted () {
+			this.initDOM()
+		},
 	}
 </script>
 
@@ -175,6 +173,11 @@
 			// 		transform: translate(0);
 			// 	}
 			// }
+			@keyframes animation {
+				0% {
+					// translate3d(var(--))
+				}
+			}
 		}
 	}
 </style>

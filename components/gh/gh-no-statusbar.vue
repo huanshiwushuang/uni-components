@@ -1,4 +1,4 @@
-<!-- 自定义容易，无status-bar -->
+<!-- 自定义容器，无status-bar -->
 <template>
 	<view class="gh-no-statusbar gh-bb gh-h">
 		<slot></slot>
